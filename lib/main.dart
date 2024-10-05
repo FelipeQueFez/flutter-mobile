@@ -46,12 +46,6 @@ class _ImageGalleryState extends State<ImageGallery> {
     });
   }
 
-  void _removeImage(int index) {
-    setState(() {
-      images.removeAt(index);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,31 +164,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                 ),
               ],
             ),
-            GridView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Número de colunas
-              ),
-              itemCount: images.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      Routes.imageView,
-                      arguments: images[index],
-                    );
-                  },
-                  onLongPress: () {
-                    _removeImage(index);
-                  },
-                  child: Card(
-                    child: Image.asset(images[index]),
-                  ),
-                );
-              },
-            ),
+            _CustomImages(images: images),
             ListView.builder(
               itemCount: 400,
               physics: NeverScrollableScrollPhysics(),
@@ -206,6 +176,55 @@ class _ImageGalleryState extends State<ImageGallery> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _CustomImages extends StatefulWidget {
+  const _CustomImages({
+    super.key,
+    required this.images,
+  });
+
+  final List<String> images;
+
+  @override
+  State<_CustomImages> createState() => __CustomImagesState();
+}
+
+class __CustomImagesState extends State<_CustomImages> {
+  void _removeImage(int index) {
+    setState(() {
+      widget.images.removeAt(index);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2, // Número de colunas
+      ),
+      itemCount: widget.images.length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              Routes.imageView,
+              arguments: widget.images[index],
+            );
+          },
+          onLongPress: () {
+            _removeImage(index);
+          },
+          child: Card(
+            child: Image.asset(widget.images[index]),
+          ),
+        );
+      },
     );
   }
 }
