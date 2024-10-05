@@ -24,7 +24,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ImageGallery extends StatelessWidget {
+class ImageGallery extends StatefulWidget {
+  @override
+  State<ImageGallery> createState() => _ImageGalleryState();
+}
+
+class _ImageGalleryState extends State<ImageGallery> {
   final List<String> images = [
     'assets/images/image1.jpg',
     'assets/images/image2.jpg',
@@ -32,11 +37,32 @@ class ImageGallery extends StatelessWidget {
     // Adicione mais caminhos de imagens
   ];
 
+  void _addImage() {
+    setState(() {
+      images.add('assets/images/image4.jpg');
+    });
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      images.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Image Gallery'),
+        actions: [
+          IconButton(
+            onPressed: _addImage,
+            icon: Icon(
+              Icons.add_box,
+              size: 36,
+            ),
+          ),
+        ],
       ),
       body: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -51,6 +77,9 @@ class ImageGallery extends StatelessWidget {
                 Routes.imageView,
                 arguments: images[index],
               );
+            },
+            onLongPress: () {
+              _removeImage(index);
             },
             child: Card(
               child: Image.asset(images[index]),
