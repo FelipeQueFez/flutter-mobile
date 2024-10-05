@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:image_gallery_app/image_view.dart';
+
+import 'routes.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,80 +11,52 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CounterStateless(),
-            SizedBox(
-              height: 20,
-            ),
-            CounterStateful(),
-          ],
+      title: 'Image Gallery App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      initialRoute: '/',
+      routes: {
+        Routes.home: (context) => ImageGallery(),
+        Routes.imageView: (context) => ImageView(),
+      },
+    );
+  }
+}
+
+class ImageGallery extends StatelessWidget {
+  final List<String> images = [
+    'assets/images/image1.jpg',
+    'assets/images/image2.jpg',
+    'assets/images/image3.png',
+    // Adicione mais caminhos de imagens
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Image Gallery'),
+      ),
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // Número de colunas
         ),
-      ),
-    );
-  }
-}
-
-class CounterStateless extends StatelessWidget {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    _counter++;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Text('StatelessWidget'),
-          Text(
-            'Contagem:',
-            style: TextStyle(fontSize: 26),
-          ),
-          ElevatedButton(
-            onPressed: _incrementCounter,
-            child: Text('Incrementar'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CounterStateful extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _CounterStateful();
-  }
-}
-
-class _CounterStateful extends State<CounterStateful> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Text('StatefulWidget'),
-          Text(
-            'Contagem: $_counter',
-            style: TextStyle(fontSize: 26),
-          ),
-          ElevatedButton(
-            onPressed: _incrementCounter,
-            child: Text('Incrementar'),
-          ),
-        ],
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                Routes.imageView,
+                arguments: images[index],
+              );
+            },
+            child: Card(
+              child: Image.asset(images[index]),
+            ),
+          );
+        },
       ),
     );
   }
