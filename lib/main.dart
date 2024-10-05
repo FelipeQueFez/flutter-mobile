@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:image_gallery_app/image_view.dart';
+import 'dart:async';
+import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'routes.dart';
+import 'image_view.dart';
+import 'dart:math' as math;
 
 void main() {
   runApp(MyApp());
@@ -15,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/',
+      initialRoute: Routes.home,
       routes: {
         Routes.home: (context) => ImageGallery(),
         Routes.imageView: (context) => ImageView(),
@@ -26,7 +29,7 @@ class MyApp extends StatelessWidget {
 
 class ImageGallery extends StatefulWidget {
   @override
-  State<ImageGallery> createState() => _ImageGalleryState();
+  _ImageGalleryState createState() => _ImageGalleryState();
 }
 
 class _ImageGalleryState extends State<ImageGallery> {
@@ -39,7 +42,7 @@ class _ImageGalleryState extends State<ImageGallery> {
 
   void _addImage() {
     setState(() {
-      images.add('assets/images/image4.jpg');
+      images.add('assets/images/image4.jpg'); // Adiciona uma nova imagem
     });
   }
 
@@ -56,36 +59,205 @@ class _ImageGalleryState extends State<ImageGallery> {
         title: Text('Image Gallery'),
         actions: [
           IconButton(
+            icon: Icon(Icons.add),
             onPressed: _addImage,
-            icon: Icon(
-              Icons.add_box,
-              size: 36,
-            ),
           ),
         ],
       ),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // Número de colunas
-        ),
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                Routes.imageView,
-                arguments: images[index],
-              );
-            },
-            onLongPress: () {
-              _removeImage(index);
-            },
-            child: Card(
-              child: Image.asset(images[index]),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              color: Colors.blue,
+              child: Text(
+                'Hello Flutter',
+                style: TextStyle(
+                  fontSize: 26,
+                  color: Colors.white,
+                ),
+              ),
             ),
-          );
-        },
+            Text('Hello world'),
+            TextField(
+              decoration: InputDecoration(labelText: 'Username'),
+            ),
+            Column(
+              children: [
+                Text('item 1'),
+                Text('item 2'),
+                Text('item 3'),
+              ],
+            ),
+            Row(
+              children: [
+                Text('item 1'),
+                Text('item 2'),
+                Text('item 3'),
+              ],
+            ),
+            ElevatedButton(
+              onPressed: () {
+                print('TOCOU NO BOTAO');
+              },
+              child: Text('Incrementar'),
+            ),
+            Icon(
+              Icons.star,
+              color: Colors.blue,
+              size: 30,
+            ),
+            Card(
+              child: ListTile(
+                title: Text('titulo'),
+                subtitle: Text('subtitulo'),
+                leading: Icon(Icons.info),
+                trailing: Icon(Icons.arrow_forward),
+              ),
+            ),
+            DropdownButton<String>(
+              items: ['Option 1', 'Option 2', 'Option 3'].map((value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (value) {},
+              value: 'Option 1',
+            ),
+            Switch(value: false, onChanged: (value) {}),
+            Checkbox(value: false, onChanged: (value) {}),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.red,
+                    width: 200,
+                    height: 50,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.blue,
+                    width: 200,
+                    height: 50,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              width: 100,
+              height: 20,
+              child: Text(
+                'HELLO WORLD COM SIZEDBOX',
+                style: TextStyle(color: Colors.green),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.red,
+                    width: 200,
+                    height: 50,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.blue,
+                    width: 200,
+                    height: 50,
+                  ),
+                ),
+              ],
+            ),
+            GridView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // Número de colunas
+              ),
+              itemCount: images.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      Routes.imageView,
+                      arguments: images[index],
+                    );
+                  },
+                  onLongPress: () {
+                    _removeImage(index);
+                  },
+                  child: Card(
+                    child: Image.asset(images[index]),
+                  ),
+                );
+              },
+            ),
+            ListView.builder(
+              itemCount: 400,
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return _CustomAnimation();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CustomAnimation extends StatefulWidget {
+  @override
+  State<_CustomAnimation> createState() => _CustomAnimationState();
+}
+
+class _CustomAnimationState extends State<_CustomAnimation> {
+  Color _color = Colors.blue;
+  double _width = 200.0;
+  double _height = 200.0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // runs every 1 second
+    Timer.periodic(new Duration(seconds: 1), (timer) {
+      _change();
+    });
+  }
+
+  void _change() {
+    var rng = Random();
+    var randomColor =
+        Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
+
+    setState(() {
+      _color = randomColor;
+      _width = rng.nextInt(200).toDouble();
+      _height = rng.nextInt(200).toDouble();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeInOut,
+      width: _width,
+      height: _height,
+      color: _color,
+      child: const Center(
+        child: Text(
+          'Tap me!',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20.0,
+          ),
+        ),
       ),
     );
   }
