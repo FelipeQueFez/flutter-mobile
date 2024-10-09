@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 
 import 'routes.dart';
 
@@ -21,15 +24,46 @@ class _ImageGalleryState extends State<ImageGallery> {
   ];
 
   final ImagePicker _picker = ImagePicker();
+  AccelerometerEvent? _accelerometerEvent;
+
+  @override
+  void initState() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    accelerometerEvents.listen((event) {
+      setState(() {
+        _accelerometerEvent = event;
+      });
+    });
+
+    super.initState();
+  }
 
   void _pickImage() async {
     try {
       final pickedFile = await _picker.pickImage(source: ImageSource.camera);
       if (pickedFile != null) {
+        var file = File(pickedFile.path);
+
         setState(() {
-          images.add(File(pickedFile.path));
+          images.add(file);
         });
+
+        _uploadImage(file);
       }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void _uploadImage(File file) async {
+    try {
+      String fileName = file.path.split('/').last;
+
+      await FirebaseStorage.instance.ref('uploads/$fileName').putFile(file);
     } catch (e) {
       print(e);
     }
@@ -56,6 +90,10 @@ class _ImageGalleryState extends State<ImageGallery> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Text('Acelerometro: \n'
+                'X: ${_accelerometerEvent?.x.toStringAsFixed(2) ?? '0.00'} \n'
+                'Y: ${_accelerometerEvent?.y.toStringAsFixed(2) ?? '0.00'} \n'
+                'Z: ${_accelerometerEvent?.z.toStringAsFixed(2) ?? '0.00'} \n'),
             _CustomImages(images: images),
           ],
         ),
