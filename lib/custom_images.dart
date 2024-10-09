@@ -6,7 +6,7 @@ class _CustomImages extends StatefulWidget {
     required this.images,
   });
 
-  final List<File> images;
+  final List<String> images;
 
   @override
   State<_CustomImages> createState() => __CustomImagesState();
@@ -41,7 +41,7 @@ class __CustomImagesState extends State<_CustomImages> {
             _removeImage(index);
           },
           child: Card(
-            child: Image.file(widget.images[index]),
+            child: Image.network(widget.images[index]),
           ),
         );
       },
