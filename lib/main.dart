@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:image_gallery_app/register_screen.dart';
 import 'image_gallery.dart';
 import 'routes.dart';
 import 'image_view.dart';
@@ -18,9 +19,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: Routes.home,
+      initialRoute: Routes.register,
       routes: {
-        Routes.home: (context) => ImageGallery(),
+        Routes.register: (context) => const RegisterScreen(),
         Routes.imageView: (context) => ImageView(),
       },
     );
