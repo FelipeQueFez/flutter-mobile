@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,7 @@ class _ImageGalleryState extends State<ImageGallery> {
   bool _loading = false;
   final ImagePicker _picker = ImagePicker();
   AccelerometerEvent? _accelerometerEvent;
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -27,6 +29,13 @@ class _ImageGalleryState extends State<ImageGallery> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
+    if (_auth.currentUser == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacementNamed(context, Routes.login);
+        return;
+      });
+    }
 
     accelerometerEvents.listen((event) {
       setState(() {
